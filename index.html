@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCM BK - MTsN 1 Kota Palangka Raya</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Custom Configuration -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            colors: {
+                                kemenag: {
+                                    green: '#006837',
+                                    darkgreen: '#004d28',
+                                    lightgreen: '#e8f5e9',
+                                    yellow: '#fdb813',
+                                    gold: '#d97706',
+                                    accent: '#10b981'
+                                }
+                            },
+                            fontFamily: {
+                                sans: ['Inter', 'sans-serif'],
+                            }
+                        }
+                    }
+                };
+            }
+        });
+    </script>
+    
+    <style>
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm 10mm 10mm;
+            }
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-size: 9pt;
+                line-height: 1.2;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .container-print {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .card-box {
+                border: 1px solid #64748b !important;
+                box-shadow: none !important;
+                background: #ffffff !important;
+                break-inside: avoid;
+            }
+            input[type="text"], input[type="date"], select, textarea {
+                border: none !important;
+                border-bottom: 1px solid #334155 !important;
+                background: transparent !important;
+                padding: 1px 0 !important;
+                outline: none !important;
+                font-weight: 600;
+                color: #000 !important;
+            }
+            select {
+                appearance: none;
+                -webkit-appearance: none;
+            }
+            input[type="checkbox"] {
+                appearance: auto !important;
+                -webkit-appearance: checkbox !important;
+                accent-color: #006837 !important;
+                width: 12px;
+                height: 12px;
+            }
+            .print-header {
+                border-bottom: 3px double #000000 !important;
+                margin-bottom: 10px !important;
+                padding-bottom: 6px !important;
+            }
+            .print-bg-header {
+                background-color: #006837 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .print-summary-bg {
+                background-color: #f0fdf4 !important;
+                border: 1px solid #16a34a !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .checkbox-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 3px !important;
+            }
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .checkbox-item {
+            transition: all 0.15s ease-in-out;
+        }
+
+        .checkbox-item:hover {
+            background-color: #f0fdf4;
+            border-color: #86efac;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen py-6 px-2 sm:px-6">
+
+    <!-- FLOATING TOP TOOLBAR (HIDDEN WHEN PRINTING) -->
+    <div class="max-w-4xl mx-auto mb-6 bg-white p-4 rounded-2xl shadow-md border border-slate-200 flex flex-wrap justify-between items-center gap-4 no-print">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-kemenag-green text-white flex items-center justify-center font-bold text-2xl shadow-md">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-slate-800 text-base sm:text-lg leading-tight">Aplikasi DCM BK MTs</h1>
+                <p class="text-xs text-slate-500 font-medium">MTsN 1 Kota Palangka Raya</p>
+            </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="loadSampleData()" class="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold rounded-lg transition border border-amber-300 flex items-center gap-1.5">
+                <i class="fas fa-magic"></i> Contoh Isi
+            </button>
+            <button type="button" onclick="resetForm()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-1.5">
+                <i class="fas fa-undo"></i> Reset
+            </button>
+            <button type="button" onclick="window.print()" class="px-5 py-2 bg-kemenag-green hover:bg-kemenag-darkgreen text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2">
+                <i class="fas fa-print text-sm"></i> Cetak / Simpan PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN FORM CONTAINER -->
+    <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-2xl shadow-xl border border-slate-200 container-print">
+
+        <!-- KOP SURAT TANPA LOGO -->
+        <div class="print-header text-center border-b-4 border-double border-slate-900 pb-3 mb-5 px-2">
+            <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 leading-snug">KEMENTERIAN AGAMA REPUBLIK INDONESIA</h3>
+            <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 leading-snug">KANTOR KEMENTERIAN AGAMA KOTA PALANGKA RAYA</h3>
+            <h2 class="text-base sm:text-xl font-black uppercase text-kemenag-green my-1 tracking-wide">MTsN 1 KOTA PALANGKA RAYA</h2>
+            <p class="text-xs sm:text-xs text-slate-600 leading-snug">
+                Jl. AIS. Nasution No.3, Pahandut, Kec. Pahandut, Kota Palangka Raya, Kalimantan Tengah 73111
+            </p>
+        </div>
+
+        <!-- JUDUL DOKUMEN -->
+        <div class="text-center mb-5">
+            <h1 class="text-base sm:text-lg font-extrabold text-slate-900 underline uppercase decoration-2 underline-offset-4 tracking-wide">DAFTAR CEK MASALAH (DCM) SISWA</h1>
+            <p class="text-xs text-slate-600 font-medium mt-0.5">Instrumen Deteksi Dini Bimbingan & Konseling (BK)</p>
+        </div>
+
+        <!-- PETUNJUK PENGISIAN -->
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-3 sm:p-3.5 rounded-r-xl mb-5 text-xs text-amber-950 no-print">
+            <p class="font-bold text-amber-900 mb-1 flex items-center gap-1.5">
+                <i class="fas fa-info-circle text-amber-600"></i> Petunjuk Pengisian:
+            </p>
+            <ol class="list-decimal list-inside space-y-1 text-slate-700">
+                <li>Isi data <strong>Identitas Siswa</strong> (Nama Lengkap, Nomor Absen, Pilihan Kelas: VII / VIII / IX, dan Tanggal).</li>
+                <li>Bacalah setiap butir pernyataan masalah di bawah ini dengan cermat.</li>
+                <li>Beri tanda centang (&#10003;) pada kotak yang sesuai jika masalah tersebut <strong>sedang Anda alami/rasakan</strong>.</li>
+                <li>Data Anda dijamin kerahasiaannya oleh Guru Bimbingan Konseling (BK).</li>
+            </ol>
+        </div>
+
+        <!-- FORM ISIAN -->
+        <form id="dcmForm" onsubmit="event.preventDefault();">
+            
+            <!-- IDENTITAS SISWA -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-5 card-box">
+                <h3 class="text-xs sm:text-sm font-bold text-kemenag-green uppercase border-b border-slate-200 pb-2 mb-3 flex items-center gap-2">
+                    <i class="fas fa-id-card"></i> Identitas Siswa / Konseli
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs sm:text-sm">
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-700 font-semibold mb-1">Nama Lengkap Siswa <span class="text-red-500">*</span></label>
+                        <input type="text" id="namaSiswa" required placeholder="Ketik Nama Lengkap Siswa..." class="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-kemenag-green outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-slate-700 font-semibold mb-1">Nomor Absen <span class="text-red-500">*</span></label>
+                        <input type="text" id="noAbsen" required placeholder="Contoh: 12" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-kemenag-green outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-slate-700 font-semibold mb-1">Kelas <span class="text-red-500">*</span></label>
+                        <!-- Pilihan Kelas Khusus VII, VIII, IX -->
+                        <select id="kelasSiswa" required class="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-kemenag-green outline-none bg-white font-medium">
+                            <option value="">-- Pilih Kelas --</option>
+                            <option value="Kelas VII">Kelas VII</option>
+                            <option value="Kelas VIII">Kelas VIII</option>
+                            <option value="Kelas IX">Kelas IX</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-700 font-semibold mb-1">Jenis Kelamin <span class="text-red-500">*</span></label>
+                        <select id="jkSiswa" required class="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-kemenag-green outline-none bg-white font-medium">
+                            <option value="">-- Jenis Kelamin --</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="block text-slate-700 font-semibold mb-1">Tanggal Pengisian <span class="text-red-500">*</span></label>
+                        <input type="date" id="tglPicker" required class="w-full sm:w-auto px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-kemenag-green outline-none bg-white font-medium cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITEM MASALAH DCM (4 BIDANG) -->
+            <div id="dcmItemsContainer" class="space-y-4 sm:space-y-5">
+                
+                <!-- BIDANG A: PRIBADI & EMOSI / IBADAH -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden card-box shadow-sm">
+                    <div class="bg-kemenag-green print-bg-header text-white px-3.5 py-2 flex justify-between items-center">
+                        <h3 class="font-bold text-xs sm:text-sm flex items-center gap-2">
+                            <i class="fas fa-user-circle text-kemenag-yellow"></i> A. BIDANG PRIBADI, EMOSI & IBADAH
+                        </h3>
+                        <span id="badge-pribadi" class="text-[10px] sm:text-[11px] bg-white text-kemenag-darkgreen font-extrabold px-2 py-0.5 rounded-full shadow-sm">0 Item Selected</span>
+                    </div>
+                    <div class="p-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-xs bg-white checkbox-grid" id="container-pribadi">
+                        <!-- Dynamic JS Content -->
+                    </div>
+                </div>
+
+                <!-- BIDANG B: SOSIAL & PERGAULAN -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden card-box shadow-sm">
+                    <div class="bg-kemenag-green print-bg-header text-white px-3.5 py-2 flex justify-between items-center">
+                        <h3 class="font-bold text-xs sm:text-sm flex items-center gap-2">
+                            <i class="fas fa-users text-kemenag-yellow"></i> B. BIDANG SOSIAL & PERGAULAN
+                        </h3>
+                        <span id="badge-sosial" class="text-[10px] sm:text-[11px] bg-white text-kemenag-darkgreen font-extrabold px-2 py-0.5 rounded-full shadow-sm">0 Item Selected</span>
+                    </div>
+                    <div class="p-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-xs bg-white checkbox-grid" id="container-sosial">
+                        <!-- Dynamic JS Content -->
+                    </div>
+                </div>
+
+                <!-- BIDANG C: BELAJAR & AKADEMIK -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden card-box shadow-sm">
+                    <div class="bg-kemenag-green print-bg-header text-white px-3.5 py-2 flex justify-between items-center">
+                        <h3 class="font-bold text-xs sm:text-sm flex items-center gap-2">
+                            <i class="fas fa-book-reader text-kemenag-yellow"></i> C. BIDANG BELAJAR & AKADEMIK
+                        </h3>
+                        <span id="badge-belajar" class="text-[10px] sm:text-[11px] bg-white text-kemenag-darkgreen font-extrabold px-2 py-0.5 rounded-full shadow-sm">0 Item Selected</span>
+                    </div>
+                    <div class="p-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-xs bg-white checkbox-grid" id="container-belajar">
+                        <!-- Dynamic JS Content -->
+                    </div>
+                </div>
+
+                <!-- BIDANG D: KARIR & CITA-CITA -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden card-box shadow-sm">
+                    <div class="bg-kemenag-green print-bg-header text-white px-3.5 py-2 flex justify-between items-center">
+                        <h3 class="font-bold text-xs sm:text-sm flex items-center gap-2">
+                            <i class="fas fa-compass text-kemenag-yellow"></i> D. BIDANG KARIR, LINGKUNGAN & CITA-CITA
+                        </h3>
+                        <span id="badge-karir" class="text-[10px] sm:text-[11px] bg-white text-kemenag-darkgreen font-extrabold px-2 py-0.5 rounded-full shadow-sm">0 Item Selected</span>
+                    </div>
+                    <div class="p-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-xs bg-white checkbox-grid" id="container-karir">
+                        <!-- Dynamic JS Content -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MASALAH UTAMA & HARAPAN -->
+            <div class="mt-5 bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 card-box">
+                <h3 class="text-xs sm:text-sm font-bold text-kemenag-green uppercase border-b border-slate-200 pb-1.5 flex items-center gap-2">
+                    <i class="fas fa-edit"></i> Masalah Utama & Harapan Konseli
+                </h3>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">
+                        Sebutkan 1 atau 2 masalah di atas yang <strong>paling mendesak / mengganggu pikiran</strong> Anda saat ini:
+                    </label>
+                    <textarea id="masalahUtama" rows="2" placeholder="Tuliskan masalah utama yang paling dirasakan..." class="w-full p-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-kemenag-green outline-none font-medium"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">
+                        Harapan atau bantuan yang Anda inginkan dari <strong>Guru Bimbingan Konseling (BK)</strong>:
+                    </label>
+                    <textarea id="harapanSiswa" rows="2" placeholder="Tuliskan bantuan yang diharapkan dari Guru BK..." class="w-full p-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-kemenag-green outline-none font-medium"></textarea>
+                </div>
+            </div>
+
+            <!-- HASIL ANALISIS & RINGKASAN DIAGNOSTIK -->
+            <div class="mt-5 p-4 sm:p-5 bg-emerald-50 print-summary-bg border border-emerald-300 rounded-xl card-box">
+                <div class="flex justify-between items-center border-b border-emerald-200 pb-2 mb-3 flex-wrap gap-2">
+                    <h3 class="text-xs sm:text-sm font-bold text-kemenag-darkgreen uppercase flex items-center gap-2">
+                        <i class="fas fa-chart-bar"></i> HASIL ANALISIS & RINGKASAN DIAGNOSTIK DCM
+                    </h3>
+                    <span id="tingkatMasalahBadge" class="text-xs px-3 py-0.5 rounded-full font-bold bg-slate-200 text-slate-700">
+                        Kategori: -
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center mb-3">
+                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                        <span class="block text-[11px] text-slate-500 font-medium">A. Pribadi & Ibadah</span>
+                        <span id="sum-pribadi" class="text-sm sm:text-base font-extrabold text-kemenag-green">0 / 10</span>
+                        <span id="pct-pribadi" class="block text-[10px] text-slate-400 font-bold">(0%)</span>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                        <span class="block text-[11px] text-slate-500 font-medium">B. Sosial Pergaulan</span>
+                        <span id="sum-sosial" class="text-sm sm:text-base font-extrabold text-kemenag-green">0 / 10</span>
+                        <span id="pct-sosial" class="block text-[10px] text-slate-400 font-bold">(0%)</span>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                        <span class="block text-[11px] text-slate-500 font-medium">C. Belajar Akademik</span>
+                        <span id="sum-belajar" class="text-sm sm:text-base font-extrabold text-kemenag-green">0 / 10</span>
+                        <span id="pct-belajar" class="block text-[10px] text-slate-400 font-bold">(0%)</span>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                        <span class="block text-[11px] text-slate-500 font-medium">D. Karir & Cita-cita</span>
+                        <span id="sum-karir" class="text-sm sm:text-base font-extrabold text-kemenag-green">0 / 10</span>
+                        <span id="pct-karir" class="block text-[10px] text-slate-400 font-bold">(0%)</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-emerald-200 flex flex-wrap justify-between items-center text-xs font-bold text-slate-800 gap-2">
+                    <div class="flex items-center gap-2">
+                        <span>TOTAL SKOR MASALAH:</span>
+                        <span id="total-masalah" class="text-xs sm:text-sm text-kemenag-darkgreen font-extrabold">0 / 40 Item (0%)</span>
+                    </div>
+                    <div class="text-[11px] text-slate-600 font-normal">
+                        Rekomendasi Layanan: <span id="rekomendasiBK" class="font-semibold text-slate-800">Bimbingan Rutin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TANDA TANGAN (PRINT READY) -->
+            <div class="mt-8 grid grid-cols-2 gap-6 text-center text-xs pt-4 border-t border-slate-300 break-inside-avoid">
+                <div>
+                    <p class="mb-0.5 text-slate-600">Mengetahui,</p>
+                    <p class="font-bold text-slate-800">Guru Bimbingan & Konseling</p>
+                    <div class="h-16"></div> <!-- Signature Line Spacer -->
+                    <p class="font-bold underline text-slate-900">( .................................................... )</p>
+                    <p class="text-[10px] text-slate-500 mt-0.5">NIP. </p>
+                </div>
+                <div>
+                    <p class="mb-0.5 text-slate-600">Palangka Raya, <span id="ttdTanggal">..........................</span></p>
+                    <p class="font-bold text-slate-800">Siswa / Konseli</p>
+                    <div class="h-16"></div> <!-- Signature Line Spacer -->
+                    <p class="font-bold underline text-slate-900" id="ttdNamaSiswa">( .................................................... )</p>
+                    <p class="text-[10px] text-slate-500 mt-0.5">Kelas / Absen: <span id="ttdKelasAbsen">-</span></p>
+                </div>
+            </div>
+
+            <!-- TOMBOL CETAK BOTTOM (MOBILE VIEW) -->
+            <div class="mt-8 text-center no-print">
+                <button type="button" onclick="window.print()" class="w-full sm:w-auto px-8 py-3 bg-kemenag-green hover:bg-kemenag-darkgreen text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2 mx-auto text-sm">
+                    <i class="fas fa-print text-base"></i> Cetak Dokumen DCM
+                </button>
+            </div>
+        </form>
+
+        <!-- FOOTER DOKUMEN -->
+        <div class="mt-8 pt-3 border-t border-slate-200 text-center text-[11px] text-slate-400 no-print">
+            <p>&copy; 2026 MTsN 1 Kota Palangka Raya - System Bimbingan Konseling (BK)</p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Data Bank Masalah DCM Khusus Tingkat MTs (10 Item per Bidang = Total 40 Item)
+        const dcmData = {
+            pribadi: [
+                "1. Sering merasa kurang percaya diri atau pemalu di depan umum/kelas.",
+                "2. Mudah merasa cemas, emosional, atau cepat marah tanpa alasan jelas.",
+                "3. Ibadah shalat 5 waktu atau mengaji/tadarus masih sering terlewat.",
+                "4. Badan sering terasa lelah, kurang fit, atau memiliki riwayat penyakit.",
+                "5. Sulit mengatur waktu harian antara waktu belajar, main, dan istirahat.",
+                "6. Kecanduan game online / pemakaian HP hingga lupa waktu.",
+                "7. Merasa kurang mendapat perhatian/kasih sayang yang cukup di rumah.",
+                "8. Merasa bingung atau cemas menghadapi perubahan fisik di usia remaja.",
+                "9. Memiliki kebiasaan buruk yang sulit dihilangkan.",
+                "10. Khawatir atau merasa pesimis mengenai masa depan diri sendiri."
+            ],
+            sosial: [
+                "11. Merasa sulit akrab atau menyesuaikan diri dengan teman baru di kelas.",
+                "12. Sering merasa dijauhi atau tidak disukai oleh teman-teman sepermainan.",
+                "13. Pernah/sering menjadi korban ejekan, sindiran, atau bullying.",
+                "14. Sering mengalami perselisihan atau pertengkaran dengan teman.",
+                "15. Merasa gugup / enggan jika harus berhadapan atau bicara dengan Guru.",
+                "16. Sulit menolak ajakan teman untuk hal yang kurang baik (bolos/merokok).",
+                "17. Suasana di kelas sering terasa tidak nyaman / gaduh.",
+                "18. Kadang merasa tidak cocok atau ada masalah komunikasi di keluarga.",
+                "19. Kurang aktif dalam kegiatan ekstrakurikuler atau organisasi sekolah.",
+                "20. Ragu memahami norma etika/sopan santun pergaulan dengan yang lebih tua."
+            ],
+            belajar: [
+                "21. Sulit memusatkan konsentrasi/fokus saat Guru menerangkan pelajaran.",
+                "22. Nilai hasil ulangan/tugas sering berada di bawah target KKM/KKTP.",
+                "23. Sering menunda-nunda mengerjakan tugas sekolah atau PR.",
+                "24. Mengalami kesulitan dalam mata pelajaran tertentu (seperti MTK, IPA, atau Bahasa).",
+                "25. Belum menemukan cara atau strategi belajar yang cocok bagi diri sendiri.",
+                "26. Kurangnya fasilitas atau suasana tenang saat belajar di rumah.",
+                "27. Sering merasa ngantuk atau jenuh saat jam pelajaran berlangsung.",
+                "28. Rasa malas belajar tinggi jika tidak didampingi atau diawasi orang tua.",
+                "29. Merasa sangat gugup/takut yang berlebihan saat akan menghadapi ujian.",
+                "30. Malu atau takut mengajukan pertanyaan kepada Guru saat belum paham."
+            ],
+            karir: [
+                "31. Belum memiliki gambaran yang jelas mengenai cita-cita pekerjaan di masa depan.",
+                "32. Bingung menentukan pilihan sekolah lanjutan (MA, SMA, atau SMK) setelah lulus MTs.",
+                "33. Belum dapat mengenali potensi, bakat, atau minat utama diri sendiri.",
+                "34. Pilihan sekolah lanjutan pilihan sendiri berbeda dengan keinginan orang tua.",
+                "35. Kurang memperoleh informasi mengenai jurusan/program di MA/SMA/SMK.",
+                "36. Khawatir mengenai kemampuan biaya orang tua untuk pendidikan ke jenjang tinggi.",
+                "37. Ragu atau tidak percaya diri bisa diterima di sekolah favorit lulusan nanti.",
+                "38. Merasa tertarik untuk bekerja/berwirausaha tapi bingung jalurnya.",
+                "39. Jarang diajak berdiskusi oleh keluarga tentang perencanaan masa depan.",
+                "40. Ingin melanjutkan ke Pondok Pesantren / Madrasah Aliyah tapi masih ragu."
+            ]
+        };
+
+        // Render Checkbox Item ke DOM
+        function renderDcmItems() {
+            for (const [bidang, items] of Object.entries(dcmData)) {
+                const container = document.getElementById(`container-${bidang}`);
+                if (!container) continue;
+                
+                container.innerHTML = '';
+                
+                items.forEach((itemText, idx) => {
+                    const itemId = `${bidang}_${idx}`;
+                    const itemWrapper = document.createElement('label');
+                    itemWrapper.setAttribute('for', itemId);
+                    itemWrapper.className = 'checkbox-item flex items-start gap-2 p-1.5 sm:p-2 rounded-lg border border-slate-100 cursor-pointer select-none';
+                    
+                    itemWrapper.innerHTML = `
+                        <input type="checkbox" id="${itemId}" data-bidang="${bidang}" onchange="calculateResults()" class="mt-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4 rounded border-slate-300 text-kemenag-green focus:ring-kemenag-green">
+                        <span class="text-slate-700 leading-snug">${itemText}</span>
+                    `;
+                    container.appendChild(itemWrapper);
+                });
+            }
+        }
+
+        // Format Tanggal Bahasa Indonesia
+        function formatTanggalIndo(dateString) {
+            if (!dateString) return '..........................';
+            const dateObj = new Date(dateString);
+            if (isNaN(dateObj.getTime())) return dateString;
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return dateObj.toLocaleDateString('id-ID', options);
+        }
+
+        // Inisialisasi Date Picker & Sync TTD
+        function initDatePicker() {
+            const tglPicker = document.getElementById('tglPicker');
+            const today = new Date().toISOString().split('T')[0];
+            tglPicker.value = today;
+
+            // Update Tanggal TTD
+            document.getElementById('ttdTanggal').innerText = formatTanggalIndo(today);
+
+            // Listener perubahan tanggal
+            tglPicker.addEventListener('change', (e) => {
+                document.getElementById('ttdTanggal').innerText = formatTanggalIndo(e.target.value);
+            });
+        }
+
+        // Binding Input Identitas ke Area Tanda Tangan
+        function bindIdentityInputs() {
+            const namaEl = document.getElementById('namaSiswa');
+            const kelasEl = document.getElementById('kelasSiswa');
+            const absenEl = document.getElementById('noAbsen');
+
+            function updateTtdInfo() {
+                const namaVal = namaEl.value.trim();
+                const kelasVal = kelasEl.value;
+                const absenVal = absenEl.value.trim();
+
+                document.getElementById('ttdNamaSiswa').innerText = namaVal ? `( ${namaVal.toUpperCase()} )` : '( .................................................... )';
+                
+                let combinedInfo = '-';
+                if (kelasVal || absenVal) {
+                    combinedInfo = `${kelasVal || '?'} / Absen ${absenVal || '?'}`;
+                }
+                document.getElementById('ttdKelasAbsen').innerText = combinedInfo;
+            }
+
+            namaEl.addEventListener('input', updateTtdInfo);
+            kelasEl.addEventListener('change', updateTtdInfo);
+            absenEl.addEventListener('input', updateTtdInfo);
+        }
+
+        // Kalkulasi Otomatis Ringkasan & Diagnostik DCM
+        function calculateResults() {
+            const categories = ['pribadi', 'sosial', 'belajar', 'karir'];
+            let grandTotal = 0;
+            const totalMax = 40;
+
+            categories.forEach(cat => {
+                const checked = document.querySelectorAll(`input[data-bidang="${cat}"]:checked`).length;
+                const countMax = dcmData[cat].length;
+                const pct = Math.round((checked / countMax) * 100);
+
+                // Update UI Badges & Ringkasan Per Bidang
+                const badgeEl = document.getElementById(`badge-${cat}`);
+                if (badgeEl) badgeEl.innerText = `${checked} Item Selected`;
+
+                document.getElementById(`sum-${cat}`).innerText = `${checked} / ${countMax}`;
+                document.getElementById(`pct-${cat}`).innerText = `(${pct}%)`;
+
+                grandTotal += checked;
+            });
+
+            const grandPct = Math.round((grandTotal / totalMax) * 100);
+            document.getElementById('total-masalah').innerText = `${grandTotal} / ${totalMax} Item (${grandPct}%)`;
+
+            // Penentuan Kategori & Rekomendasi
+            const badgeCat = document.getElementById('tingkatMasalahBadge');
+            const rekomEl = document.getElementById('rekomendasiBK');
+
+            if (grandPct < 15) {
+                badgeCat.className = 'text-xs px-3 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+                badgeCat.innerText = 'Kategori: Rendah';
+                rekomEl.innerText = 'Bimbingan Pencegahan & Pengembangan Diri';
+            } else if (grandPct < 40) {
+                badgeCat.className = 'text-xs px-3 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-300';
+                badgeCat.innerText = 'Kategori: Sedang';
+                rekomEl.innerText = 'Bimbingan Kelompok & Konseling Individu';
+            } else if (grandPct < 65) {
+                badgeCat.className = 'text-xs px-3 py-0.5 rounded-full font-bold bg-orange-100 text-orange-800 border border-orange-300';
+                badgeCat.innerText = 'Kategori: Tinggi';
+                rekomEl.innerText = 'Konseling Individual Prioritas Lanjutan';
+            } else {
+                badgeCat.className = 'text-xs px-3 py-0.5 rounded-full font-bold bg-red-100 text-red-800 border border-red-300';
+                badgeCat.innerText = 'Kategori: Sangat Tinggi';
+                rekomEl.innerText = 'Penanganan Khusus / Alih Tangan Kasus (Referral)';
+            }
+        }
+
+        // Isi Sampel Data Simulasikan Pengisian
+        function loadSampleData() {
+            document.getElementById('namaSiswa').value = "Ahmad Zaini";
+            document.getElementById('kelasSiswa').value = "Kelas VIII";
+            document.getElementById('noAbsen').value = "04";
+            document.getElementById('jkSiswa').value = "Laki-laki";
+
+            // Centang beberapa item contoh
+            const sampleIds = ['pribadi_0', 'pribadi_5', 'sosial_1', 'belajar_0', 'belajar_3', 'belajar_8', 'karir_1'];
+            
+            // Clear semua dahulu
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+            sampleIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.checked = true;
+            });
+
+            document.getElementById('masalahUtama').value = "Kesulitan memahami materi Matematika dan sering kecanduan main game HP hingga malam hari.";
+            document.getElementById('harapanSiswa').value = "Ingin dibantu strategi belajar efektif dan cara mengendalikan waktu penggunaan HP.";
+
+            // Trigger updates
+            document.getElementById('namaSiswa').dispatchEvent(new Event('input'));
+            calculateResults();
+        }
+
+        // Reset Seluruh Form
+        function resetForm() {
+            document.getElementById('dcmForm').reset();
+            initDatePicker();
+            calculateResults();
+            document.getElementById('ttdNamaSiswa').innerText = '( .................................................... )';
+            document.getElementById('ttdKelasAbsen').innerText = '-';
+        }
+
+        // Initializer saat dokumen selesai dimuat
+        window.onload = function() {
+            renderDcmItems();
+            initDatePicker();
+            bindIdentityInputs();
+            calculateResults();
+        };
+    </script>
+</body>
+</html>
